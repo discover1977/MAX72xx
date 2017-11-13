@@ -20,10 +20,10 @@
 /* настройки SPI порта*/
 #define SPI_PORT			PORTB
 #define SPI_DDR				DDRB
-#define SPI_MOSI			3
-#define SPI_MISO			4
-#define SPI_SCK				5
-#define SPI_CS				2
+#define SPI_MOSI			5
+#define SPI_MISO			6
+#define SPI_SCK				7
+#define SPI_CS				4
 
 /***************** Карта адресов MAX72xx *****************/
 #define NO_OP			0x00
@@ -39,7 +39,7 @@
 #define INTENSITY		0x0A
 #define SCAN_LIMIT		0x0B
 #define SHUTDOWN		0x0C
-#define DISPLAY_TEST	0x0D
+#define DISPLAY_TEST	0x0F
 /*********************************************************/
 
 /****************** Code B Font MAX72xx ******************/

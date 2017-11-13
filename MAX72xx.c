@@ -67,6 +67,7 @@ FLASH_VAR(uint8_t sym[]) =
   'n', (0<<SEG_A)|(0<<SEG_B)|(1<<SEG_C)|(0<<SEG_D)|(1<<SEG_E)|(0<<SEG_F)|(1<<SEG_G)|(0<<SEG_H),
   'd', (0<<SEG_A)|(1<<SEG_B)|(1<<SEG_C)|(1<<SEG_D)|(1<<SEG_E)|(0<<SEG_F)|(1<<SEG_G)|(0<<SEG_H),
   'h', (0<<SEG_A)|(0<<SEG_B)|(1<<SEG_C)|(0<<SEG_D)|(1<<SEG_E)|(1<<SEG_F)|(1<<SEG_G)|(0<<SEG_H),
+  'Y', (0<<SEG_A)|(1<<SEG_B)|(1<<SEG_C)|(1<<SEG_D)|(0<<SEG_E)|(1<<SEG_F)|(1<<SEG_G)|(0<<SEG_H),
    0
 };
 
@@ -126,10 +127,12 @@ void MAX72xx_Init(uint8_t intensity)
 	if (intensity > 15) intensity= 5;
 	SPI_MasterInit();
 	for (int i = 0; i < MAX72XX_NUMBERS; i++) {
-		MAX72xx_Send(i, SHUTDOWN, 0x01);
+		MAX72xx_Send(i, DISPLAY_TEST, 0x00);
 		MAX72xx_Send(i, SCAN_LIMIT, 0x07);
+		// Decode mode - 0
 		MAX72xx_Send(i, INTENSITY, (0x0F & intensity));
 		MAX72xx_Clear(i);
+		MAX72xx_Send(i, SHUTDOWN, 0x01);
 	}
 }
 
@@ -172,8 +175,27 @@ uint8_t make_number(int32_t value, uint8_t start_pos, uint8_t stop_pos, uint8_t 
 	}
 	int8_t ZnakPos = 1;
 
+	/*
+    for(i = 0; i < amount; i++){
+       tmp = value % 10;
+       if ((i == 0)||(value > 0)||(position <= comma)){
+          ind_buf[position-1] = read_byte_flash(number[tmp]);
+       }
+       else{
+          ind_buf[position-1] = read_byte_flash(number[IND_EMPTY_NUM]);
+       }
+       value = value/10;
+       position++;
+       if (position > IND_AMOUNT_NUM){
+          break;
+       }
+    }
+    */
+
 	for (int i = start_pos; i < stop_pos + 1; i++) {
-		Buffer[i] = (tmpVal%10 != 0)?(tmpVal%10):(((tmpVal < 10) && (i > 0))?(SYMBOL_BLANK):(tmpVal%10));
+		// Buffer[i] = (tmpVal%10 != 0)?(tmpVal%10):(((tmpVal < 10) && (i > 0))?(SYMBOL_BLANK):(tmpVal%10));
+		Buffer[i] = (tmpVal%10 != 0)?(tmpVal%10):(((tmpVal < 10) && (i > 0))?((i < comma_pos)?(0):(SYMBOL_BLANK)):(tmpVal%10));
+
 		tmpVal /= 10;
 
 		if ((i + 1) == comma_pos) SetBit(Buffer[i], 7);
