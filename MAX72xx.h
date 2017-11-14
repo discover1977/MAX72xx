@@ -10,7 +10,7 @@
 
 /*********************** Настройки ***********************/
 /* количество микросхем */
-#define MAX72XX_NUMBERS		2
+#define MAX72XX_NUMBERS		1
 
 /* включение поддержки символов(прямой вывод) и функций вывода строк */
 // 0 - подержка выключена
@@ -20,10 +20,10 @@
 /* настройки SPI порта*/
 #define SPI_PORT			PORTB
 #define SPI_DDR				DDRB
-#define SPI_MOSI			5
-#define SPI_MISO			6
-#define SPI_SCK				7
-#define SPI_CS				4
+#define SPI_MOSI			3
+#define SPI_MISO			4
+#define SPI_SCK				5
+#define SPI_CS				2
 
 /***************** Карта адресов MAX72xx *****************/
 #define NO_OP			0x00

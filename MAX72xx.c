@@ -119,7 +119,9 @@ void SPI_MasterInit(void)
 
 	/* Enable SPI, Master, set clock rate fck/16 */
 	SPCR = 0;
-	SPCR = (0<<SPIE)|(1 << SPE)|(0 << DORD)|(1 << MSTR)|(0<<SPI2X)|(0 << SPR1)|(0 << SPR0)|(0<<CPOL)|(0<<CPHA);
+	SPCR = (0<<SPIE)|(1 << SPE)|(0 << DORD)|(1 << MSTR)|(1 << SPR1)|(1 << SPR0)|(0<<CPOL)|(0<<CPHA);
+	SPSR = 0;
+	SPSR = (0<<SPI2X);
 }
 
 void MAX72xx_Init(uint8_t intensity)
@@ -173,6 +175,7 @@ uint8_t make_number(int32_t value, uint8_t start_pos, uint8_t stop_pos, uint8_t 
 	else {
 		tmpVal = value;
 	}
+
 	int8_t ZnakPos = 1;
 
 	/*
@@ -194,7 +197,8 @@ uint8_t make_number(int32_t value, uint8_t start_pos, uint8_t stop_pos, uint8_t 
 
 	for (int i = start_pos; i < stop_pos + 1; i++) {
 		// Buffer[i] = (tmpVal%10 != 0)?(tmpVal%10):(((tmpVal < 10) && (i > 0))?(SYMBOL_BLANK):(tmpVal%10));
-		Buffer[i] = (tmpVal%10 != 0)?(tmpVal%10):(((tmpVal < 10) && (i > 0))?((i < comma_pos)?(0):(SYMBOL_BLANK)):(tmpVal%10));
+		// Buffer[i] = (tmpVal%10 != 0)?(tmpVal%10):(((tmpVal < 10) && (i > 0))?((i < comma_pos)?(0):(SYMBOL_BLANK)):(tmpVal%10));
+		Buffer[i] = (tmpVal%10 != 0)?(tmpVal%10):(((tmpVal < 10) && (i > 0))?((i < comma_pos)?(0):(((value == 0) && (i == start_pos))?(0):(SYMBOL_BLANK))):(tmpVal%10));
 
 		tmpVal /= 10;
 
@@ -204,7 +208,7 @@ uint8_t make_number(int32_t value, uint8_t start_pos, uint8_t stop_pos, uint8_t 
 		if (tmpVal != 0) ZnakPos++;
 	}
 	if (value < 0) {
-		Buffer[ZnakPos + start_pos] = SYMBOL_MINUS;
+		Buffer[(comma_pos == 0)?(ZnakPos + start_pos):(comma_pos)] = SYMBOL_MINUS;
 	}
 	return ZnakPos;
 }
